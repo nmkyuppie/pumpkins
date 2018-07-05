@@ -1,0 +1,41 @@
+@charset "ISO-8859-1";
+.header{
+    height: 50px;
+    background: #eee;
+    box-shadow: 0 0 3px rgba(0,0,0,0.4);
+    margin-bottom: 15px;
+}
+
+.title{
+	color: #666;
+    font-weight: bold;
+    line-height: 50px;
+    font-size: 20px;
+    padding-left:20px;
+}
+
+.sideBar{
+	overflow: auto;
+}
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -ms-animation: spin .7s infinite linear;
+    -webkit-animation: spinw .7s infinite linear;
+    -moz-animation: spinm .7s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+  
+@-webkit-keyframes spinw {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@-moz-keyframes spinm {
+    from { -moz-transform: rotate(0deg);}
+    to { -moz-transform: rotate(360deg);}
+}
