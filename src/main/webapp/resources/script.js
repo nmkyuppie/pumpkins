@@ -3,8 +3,6 @@ function deploy(){
 	document.getElementById("error").classList.add("d-none");
 	document.getElementById("success").classList.remove("d-block");
 	document.getElementById("success").classList.add("d-none");
-	var groupId=document.getElementById("groupId").value;
-	var artifactId=document.getElementById("artifactId").value;
 	var version=document.getElementById("version").value;
 	var e = document.getElementById("environment");
 	var environment = e.options[e.selectedIndex].value;
@@ -13,18 +11,6 @@ function deploy(){
 		document.getElementById("error").classList.add("d-block");
 		document.getElementById("error").classList.remove("d-none");
 		document.getElementById("error").innerHTML = "Version is mandatory.";
-		return;
-	}
-	else if(groupId.trim()===''){
-		document.getElementById("error").classList.add("d-block");
-		document.getElementById("error").classList.remove("d-none");
-		document.getElementById("error").innerHTML = "Group Id is mandatory.";
-		return;
-	}
-	else if(artifactId.trim()===''){
-		document.getElementById("error").classList.add("d-block");
-		document.getElementById("error").classList.remove("d-none");
-		document.getElementById("error").innerHTML = "Artifact Id is mandatory.";
 		return;
 	}
 	
@@ -51,11 +37,10 @@ function deploy(){
 				document.getElementById("error").classList.remove("d-none");
 				document.getElementById("error").innerHTML = message;
 	    	}
-	    	
 //	    	window.open(this.responseText);
 	    }
 	  };
-	  xhttp.open("GET", "deploy?groupId="+groupId+"&artifactId="+artifactId+"&version="+version+"&environment="+environment,
+	  xhttp.open("GET", "deploy?version="+version+"&environment="+environment,
 			  true);
 	  xhttp.send();
 }

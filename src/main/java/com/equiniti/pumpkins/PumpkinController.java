@@ -40,22 +40,17 @@ public class PumpkinController {
 
 	@RequestMapping(value = "/", method=RequestMethod.GET)
 	public ModelAndView index(@RequestParam(value = "version", required = false) String version) {
-		String artifactId=env.getProperty("artifactId");
-		String groupId=env.getProperty("groupId");
-		List<String> versions=getVersions(artifactId, groupId);
+		List<String> versions=getVersions();
 		ModelMap model = new ModelMap();
 		Collections.reverse(versions);
 		
 		model.put("versions", versions);
 		model.put("version", version);
-		model.put("groupId", groupId);
-		model.put("artifactId", artifactId);
 		return new ModelAndView("index", model);
 	}
 
-	public List<String> getVersions(String artifactId, String groupId) {
-		groupId = groupId.replaceAll("\\.", "\\\\");
-		String versionDir = env.getProperty("archiva-path") + artifactId + "\\" + groupId + "\\" + artifactId + "\\";
+	public List<String> getVersions() {
+		String versionDir = env.getProperty("archiva-path") + "\\";
 		File dir = new File(versionDir);
 		File[] files=dir.listFiles();
 		List<String> folderList=new ArrayList<String>();
@@ -71,24 +66,21 @@ public class PumpkinController {
 
 	@RequestMapping(value = "/deploy")
 	@ResponseBody
-	public String showConfiguration(@RequestParam(value = "groupId", required = true) String groupId,
-			@RequestParam(value = "artifactId", required = true) String artifactId,
-			@RequestParam(value = "version", required = true) String version,
+	public String showConfiguration(@RequestParam(value = "version", required = true) String version,
 			@RequestParam(value = "environment", required = true) String environment) throws IOException {
-		String archivaDir = "";
+		String versionDir = "";
 		String warFileName = "";
-		String codeBaseFolderName="Xanite_Maven";
+		String codeBaseFolderName="web";
 		File[] warFiles=null;
 		
-		groupId = groupId.replaceAll("\\.", "\\\\");
-		archivaDir = env.getProperty("archiva-path") + artifactId + "\\" + groupId + "\\" + artifactId + "\\" + version + "\\";
+		versionDir = env.getProperty("archiva-path") + "\\" + version + "\\";
 		
-		warFiles = getWarFile(archivaDir);
+		warFiles = getWarFile(versionDir);
 		
 		if(warFiles == null || warFiles.length<=0) {
-			File f=new File(archivaDir+codeBaseFolderName);
+			File f=new File(versionDir+codeBaseFolderName);
 			if(f.exists()) {
-				ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \""+archivaDir+codeBaseFolderName+"\" && jar -cvf "+archivaDir+"Xanite_Maven.war *");
+				ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \""+versionDir+codeBaseFolderName+"\" && jar -cvf "+versionDir+"Xanite_Maven.war *");
 				builder.redirectErrorStream(true);
 				
 				Process p = builder.start();
@@ -103,7 +95,7 @@ public class PumpkinController {
 						System.out.println(line);
 					}
 				}
-				warFiles = getWarFile(archivaDir);
+				warFiles = getWarFile(versionDir);
 				warFileName = warFiles[0].getName();
 			}
 		}
@@ -111,16 +103,16 @@ public class PumpkinController {
 			warFileName = warFiles[0].getName();
 		}
 		
-		String tomcatURL = env.getProperty(environment+"-tomcat-URL") + "?update=true&path=/" + artifactId;
-		String warFilePath=env.getProperty("archiva-path") + artifactId + "\\" + groupId + "\\" + artifactId + "\\" + version
+		String tomcatURL = env.getProperty(environment+"-tomcat-URL") + "?update=true&path=/Xanite_Partial";
+		String warFilePath=env.getProperty("archiva-path") + "\\" + version
 				+ "\\" + warFileName;
 		
 		String message=deployInTomcat(tomcatURL, warFilePath);
 		return message;
 	}
 
-	private File[] getWarFile(String archivaDir) {
-		File dir = new File(archivaDir);
+	private File[] getWarFile(String versionDir) {
+		File dir = new File(versionDir);
 		return dir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
 				return filename.endsWith(".war");
@@ -128,11 +120,16 @@ public class PumpkinController {
 		});
 	}
 
-	private String deployInTomcat(String url, String warFilePath) {
+	private String deployInTomcat(String remoteTomcatURL, String warFilePath) {
 		File binaryFile = new File(warFilePath);
+		if(binaryFile.canRead()) {
+			System.out.println("Hiiiii");
+		}else {
+			System.out.println("Jiiiii");
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPut httpPut = new HttpPut(url);
+		HttpPut httpPut = new HttpPut(remoteTomcatURL);
         httpPut.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE); 
  
         FileEntity fileEntity = new FileEntity(binaryFile, ContentType.APPLICATION_OCTET_STREAM); 

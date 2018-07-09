@@ -35,14 +35,6 @@
 			<main class="col-12 col-md-6 col-xl-6 py-md-3 pl-md-5 bd-content">
 				<form>
 				  <div class="form-group">
-				    <label for="groupId">Group Id*</label>
-				    <input type="text" class="form-control" id="groupId" placeholder="com.example" value="${groupId}">
-				  </div>
-				  <div class="form-group">
-				    <label for="artifactId">Artifact Id*</label>
-				    <input type="text" class="form-control" id="artifactId" placeholder="Artifact Id" value="${artifactId}">
-				  </div>
-				  <div class="form-group">
 				    <label for="version">Version*</label>
 				    <input type="text" class="form-control" id="version" placeholder="Version" value="${version}">
 				  </div>	
