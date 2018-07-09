@@ -2,6 +2,7 @@ package com.equiniti.pumpkins;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,9 +59,11 @@ public class PumpkinController {
 		File dir = new File(versionDir);
 		File[] files=dir.listFiles();
 		List<String> folderList=new ArrayList<String>();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].isDirectory()) {
-				folderList.add(files[i].getName());
+		if(files != null){
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					folderList.add(files[i].getName());
+				}
 			}
 		}
 		return folderList;
@@ -161,6 +164,9 @@ public class PumpkinController {
 		}catch (SocketException e) {
 			e.printStackTrace();
 			return "pumpkins-failure"+"Connection refused.";
+		} catch(FileNotFoundException fe){
+			fe.printStackTrace();
+			return "pumpkins-failure"+"*.war is not found.";
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
