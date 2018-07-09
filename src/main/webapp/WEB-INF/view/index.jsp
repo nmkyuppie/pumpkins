@@ -29,25 +29,25 @@
 		<div class="row flex-xl-nowrap">
 			<div class="col-12 col-md-3 col-xl-2 bd-sidebar sideBar" id="sideBar">
 				<c:forEach items="${versions}" var="temp">
-	            	<a class="btn btn-link" href="?version=${temp}">${temp}</a> <hr style="margin:0;">
+	            	<a class="btn btn-link anchorHover" href="?version=${temp}">${temp}</a><hr style="margin:0;">
 	            </c:forEach>
 			</div>
 			<main class="col-12 col-md-6 col-xl-6 py-md-3 pl-md-5 bd-content">
 				<form>
 				  <div class="form-group">
-				    <label for="groupId">Group Id</label>
+				    <label for="groupId">Group Id*</label>
 				    <input type="text" class="form-control" id="groupId" placeholder="com.example" value="${groupId}">
 				  </div>
 				  <div class="form-group">
-				    <label for="artifactId">Artifact Id</label>
+				    <label for="artifactId">Artifact Id*</label>
 				    <input type="text" class="form-control" id="artifactId" placeholder="Artifact Id" value="${artifactId}">
 				  </div>
 				  <div class="form-group">
-				    <label for="version">Version</label>
+				    <label for="version">Version*</label>
 				    <input type="text" class="form-control" id="version" placeholder="Version" value="${version}">
 				  </div>	
 				   <div class="form-group">
-				      <label for="environment">Deploy In</label>
+				      <label for="environment">Deploy In*</label>
 				      <select id="environment" class="form-control">
 				        <option value="dev" selected>Dev</option>
 				        <option value="qa">QA</option>

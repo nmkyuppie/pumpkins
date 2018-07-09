@@ -23,7 +23,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,19 +39,22 @@ public class PumpkinController {
 
 	@RequestMapping(value = "/", method=RequestMethod.GET)
 	public ModelAndView index(@RequestParam(value = "version", required = false) String version) {
-		List<String> versions=getVersions();
+		String artifactId=env.getProperty("artifactId");
+		String groupId=env.getProperty("groupId");
+		List<String> versions=getVersions(artifactId, groupId);
 		ModelMap model = new ModelMap();
 		Collections.reverse(versions);
+		
 		model.put("versions", versions);
 		model.put("version", version);
-		model.put("groupId", env.getProperty("groupId"));
-		model.put("artifactId", env.getProperty("artifactId"));
-		System.out.println();
+		model.put("groupId", groupId);
+		model.put("artifactId", artifactId);
 		return new ModelAndView("index", model);
 	}
 
-	public List<String> getVersions() {
-		String versionDir="D:\\apache-archiva-2.2.3-bin\\apache-archiva-2.2.3\\repositories\\Xanite_Maven\\com\\equiniti\\xanite\\Xanite_Maven";
+	public List<String> getVersions(String artifactId, String groupId) {
+		groupId = groupId.replaceAll("\\.", "\\\\");
+		String versionDir = env.getProperty("archiva-path") + artifactId + "\\" + groupId + "\\" + artifactId + "\\";
 		File dir = new File(versionDir);
 		File[] files=dir.listFiles();
 		List<String> folderList=new ArrayList<String>();
@@ -61,7 +63,6 @@ public class PumpkinController {
 				folderList.add(files[i].getName());
 			}
 		}
-		
 		return folderList;
 	}
 
@@ -80,15 +81,14 @@ public class PumpkinController {
 		archivaDir = env.getProperty("archiva-path") + artifactId + "\\" + groupId + "\\" + artifactId + "\\" + version + "\\";
 		
 		warFiles = getWarFile(archivaDir);
+		
 		if(warFiles == null || warFiles.length<=0) {
 			File f=new File(archivaDir+codeBaseFolderName);
 			if(f.exists()) {
 				ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd \""+archivaDir+codeBaseFolderName+"\" && jar -cvf "+archivaDir+"Xanite_Maven.war *");
-				
 				builder.redirectErrorStream(true);
 				
 				Process p = builder.start();
-				
 				if(p.isAlive()) {
 					BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 					String line;
@@ -113,8 +113,16 @@ public class PumpkinController {
 				+ "\\" + warFileName;
 		
 		String message=deployInTomcat(tomcatURL, warFilePath);
-
 		return message;
+	}
+
+	private File[] getWarFile(String archivaDir) {
+		File dir = new File(archivaDir);
+		return dir.listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				return filename.endsWith(".war");
+			}
+		});
 	}
 
 	private String deployInTomcat(String url, String warFilePath) {
@@ -127,7 +135,7 @@ public class PumpkinController {
         FileEntity fileEntity = new FileEntity(binaryFile, ContentType.APPLICATION_OCTET_STREAM); 
         httpPut.setEntity(fileEntity);
         
-        String statusLine=null;
+        String statusLine="";
 		try {
 			statusLine = httpClient.execute(httpPut, new ResponseHandler<String>() {
 
@@ -159,16 +167,5 @@ public class PumpkinController {
  
         return statusLine;
             
-	}
-
-	private File[] getWarFile(String archivaDir) {
-		File dir = new File(archivaDir);
-
-		return dir.listFiles(new FilenameFilter() {
-
-			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".war");
-			}
-		});
 	}
 }
