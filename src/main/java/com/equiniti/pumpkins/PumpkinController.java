@@ -92,15 +92,24 @@ public class PumpkinController {
 						if (line == null) {
 							break;
 						}
-						System.out.println(line);
 					}
 				}
 				warFiles = getWarFile(versionDir);
-				warFileName = warFiles[0].getName();
+				if(warFiles.length!=0) {
+					warFileName = warFiles[0].getName();	
+				}
+				else {
+					return "pumpkins-failure"+"*.war is not found. Unable to create it.";
+				}
 			}
 		}
 		else {
-			warFileName = warFiles[0].getName();
+			if(warFiles.length!=0) {
+				warFileName = warFiles[0].getName();	
+			}
+			else {
+				return "pumpkins-failure"+"*.war is not found. Unable to create it.";
+			}
 		}
 		
 		String tomcatURL = env.getProperty(environment+"-tomcat-URL") + "?update=true&path=/Xanite_Partial";
@@ -122,10 +131,8 @@ public class PumpkinController {
 
 	private String deployInTomcat(String remoteTomcatURL, String warFilePath) {
 		File binaryFile = new File(warFilePath);
-		if(binaryFile.canRead()) {
-			System.out.println("Hiiiii");
-		}else {
-			System.out.println("Jiiiii");
+		if(!binaryFile.canRead()) {
+			return "pumpkins-failure"+binaryFile.getAbsolutePath()+" cannot be read. Access Denied.";
 		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
