@@ -50,7 +50,7 @@ public class PumpkinController {
 	}
 
 	public List<String> getVersions() {
-		String versionDir = env.getProperty("archiva-path") + "\\";
+		String versionDir = env.getProperty("version-folder") + "\\";
 		File dir = new File(versionDir);
 		File[] files=dir.listFiles();
 		List<String> folderList=new ArrayList<String>();
@@ -73,7 +73,7 @@ public class PumpkinController {
 		String codeBaseFolderName="web";
 		File[] warFiles=null;
 		
-		versionDir = env.getProperty("archiva-path") + "\\" + version + "\\";
+		versionDir = env.getProperty("version-folder") + "\\" + version + "\\";
 		
 		warFiles = getWarFile(versionDir);
 		
@@ -112,8 +112,8 @@ public class PumpkinController {
 			}
 		}
 		
-		String tomcatURL = env.getProperty(environment+"-tomcat-URL") + "?update=true&path=/Xanite_Partial";
-		String warFilePath=env.getProperty("archiva-path") + "\\" + version
+		String tomcatURL = env.getProperty(environment+"-tomcat-URL") + "?update=true&path=/xanite";
+		String warFilePath=env.getProperty("version-folder") + "\\" + version
 				+ "\\" + warFileName;
 		
 		String message=deployInTomcat(tomcatURL, warFilePath);
